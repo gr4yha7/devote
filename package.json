@@ -1,0 +1,14 @@
+{
+  "name": "decentralized-voting-dapp",
+  "private": true,
+  "scripts": {
+    "setup": "git submodule update --init --recursive && cd frontend && npm install",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "update-abis": "mkdir -p frontend/contracts/abis && cp -r contracts/out/*/*.json frontend/contracts/abis/",
+    "build": "npm run contracts:build && npm run update-abis && npm run frontend:build",
+    "dev": "npm run contracts:build && npm run update-abis && npm run frontend:dev"
+  }
+}
