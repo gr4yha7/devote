@@ -1,18 +1,37 @@
-'use client'
+"use client";
 
-import { WagmiProvider } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { config } from '../wagmi.config'
+import { FC, PropsWithChildren } from "react";
+import { WagmiProvider } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { http } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
+import { createConfig } from "wagmi";
+import { CivicAuthProvider } from "@civic/auth-web3/nextjs";
+import { embeddedWallet } from "@civic/auth-web3/wagmi";
+
+export const config = createConfig({
+  chains: [mainnet, sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+  },
+  connectors: [embeddedWallet()],
+  ssr: true,
+});
 
 // Create a client
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
-export function Providers({ children }: { children: React.ReactNode }) {
+type ProvidersProps = PropsWithChildren<{
+  onSessionEnd?: () => void;
+}>;
+
+export const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </WagmiProvider>
-  )
-} 
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
+        <CivicAuthProvider initialChain={sepolia}>{children}</CivicAuthProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
+  );
+};
