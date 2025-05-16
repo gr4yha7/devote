@@ -1,21 +1,25 @@
 "use client";
 
 import { FC, PropsWithChildren } from "react";
-import { WagmiProvider } from "wagmi";
+import { injected, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia, hardhat } from "wagmi/chains";
 import { createConfig } from "wagmi";
 import { CivicAuthProvider } from "@civic/auth-web3/nextjs";
 import { embeddedWallet } from "@civic/auth-web3/wagmi";
 
 export const config = createConfig({
-  chains: [mainnet, sepolia],
+  chains: [hardhat, mainnet, sepolia],
   transports: {
+    [hardhat.id]: http(),
     [mainnet.id]: http(),
     [sepolia.id]: http(),
   },
-  connectors: [embeddedWallet()],
+  connectors: [
+    // injected(),
+    embeddedWallet(),
+  ],
   ssr: true,
 });
 
@@ -28,10 +32,10 @@ type ProvidersProps = PropsWithChildren<{
 
 export const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={config}>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
         <CivicAuthProvider initialChain={sepolia}>{children}</CivicAuthProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 };

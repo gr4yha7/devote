@@ -14,5 +14,5 @@ const nextConfig: NextConfig = {
     return config;
   },
 };
-
 export default withCivicAuth(nextConfig);
+// export default nextConfig;
